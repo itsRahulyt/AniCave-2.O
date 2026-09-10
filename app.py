@@ -58,9 +58,21 @@ async def lifespan(app: FastAPI):
 
         if Config.FORCE_SUB_CHANNEL:
             try:
-                print(f"Verifying force sub channel ({Config.FORCE_SUB_CHANNEL})...")
-                await bot.get_chat(Config.FORCE_SUB_CHANNEL)
-                print("✅ Force Sub channel accessible hai.")
+                print(f"Verifying storage channel ({Config.STORAGE_CHANNEL})...")
+
+storage_found = False
+
+async for dialog in bot.get_dialogs():
+    if dialog.chat.id == int(Config.STORAGE_CHANNEL):
+        storage_found = True
+        print(f"✅ Storage channel found: {dialog.chat.title} ({dialog.chat.id})")
+        break
+
+if not storage_found:
+    raise RuntimeError(
+        f"Storage channel {Config.STORAGE_CHANNEL} bot ke dialogs mein nahi mila. "
+        "Check karo ki bot channel mein member/admin hai."
+    )
             except Exception as e:
                 print(f"!!! WARNING: Bot, Force Sub channel mein admin nahi hai. Error: {e}")
         
